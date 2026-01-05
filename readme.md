@@ -51,3 +51,8 @@ class PaymentService {
     }
 }
 ```
+
+## What is a Dependency?
+
+> \_A dependency is any object, class, or service that another class needs to function.
+> If a class uses another class to do its work, it depends on it.
