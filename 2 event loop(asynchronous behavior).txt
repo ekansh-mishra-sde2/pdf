@@ -1,0 +1,153 @@
+Q1: What is the JavaScript Event Loop, and why do we need it?
+
+    The Event Loop is a mechanism that enables JavaScript’s single-threaded runtime to 
+    handle asynchronous operations (like timers, network requests, UI events) without blocking
+    the main execution thread. Since JavaScript can only execute one thing at a time, 
+    the event loop constantly checks the call stack and schedules asynchronous callbacks 
+    when the stack is empty. 
+    This allows JavaScript to be non-blocking and responsive while processing async tasks efficiently.
+
+=================================================================================================================================
+
+Q2: How does JavaScript handle asynchronous tasks without blocking?
+
+    JavaScript delegates asynchronous tasks (e.g., setTimeout, network or I/O) to Web APIs / environment APIs.
+    When those tasks complete, their callbacks are queued (in microtask or macrotask queues). 
+    The event loop then moves those callbacks to the call stack once the current synchronous work completes,
+    ensuring asynchronous behavior doesn’t block execution.
+
+=================================================================================================================================
+
+Q3: What are the major components of the Event Loop (call stack, queues)?
+
+    Main components:
+    Call Stack: Where synchronous code runs (LIFO).
+    Web APIs (Browser/Node APIs): Handle async tasks outside the JS engine.
+    Microtask Queue: High-priority queue for promise jobs and other microtasks.
+    Macrotask (Task) Queue: Lower-priority queue for callbacks like setTimeout, events, I/O.
+    Event Loop: Continuously checks if the call stack is empty, then drains microtasks first, then macrotasks.
+
+=================================================================================================================================
+
+Q4: What is the difference between synchronous and asynchronous code?
+
+    Synchronous code executes line by line and blocks further execution until each step completes.
+
+    Asynchronous code starts an operation (e.g., timer, promise), returns immediately, 
+    and schedules the result to run later via queues. 
+    This allows other code to keep running while waiting for slower operations to finish.
+=================================================================================================================================
+
+Q5: Explain microtask queue vs task (macrotask) queue.
+
+    Microtasks are high-priority callbacks (like Promise.then, async/await continuations). 
+    They run right after the current synchronous code and before the next macrotask.
+
+    Macrotasks (also called task queue) include callbacks from setTimeout, setInterval, I/O, and UI events
+    and run after the microtasks are drained.
+    The event loop always empties the entire microtask queue first; only then does it pick the next macrotask.
+
+=================================================================================================================================
+
+Q6: What is a Promise, and how does it work?
+
+    A Promise is a JavaScript object representing the future result of an asynchronous operation. 
+    It starts in a pending state, and eventually becomes either:
+    fulfilled, with a value, or
+    rejected, with a reason (error).
+
+    Promises let you attach handlers with .then() for success and .catch() for errors,
+    avoiding deeply nested callbacks and making async code easier to compose
+
+=================================================================================================================================
+Q7: What is the difference between Promise.all and Promise.allSettled?
+
+    Promise.all() waits for all input promises to fulfill — if any Promise rejects, 
+    the returned promise rejects immediately with that error.
+
+    Promise.allSettled() waits for all promises to finish, whether they are fulfilled or rejected,
+    and returns an array describing each result’s status and value/reason.
+    Use allSettled() when you want results regardless of individual success or failure.
+
+=================================================================================================================================
+Q8: What are Promise states? (pending, fulfilled, rejected)
+
+    A Promise can be in one of three states:
+    Pending: initial state; no result yet.
+    Fulfilled: operation succeeded and returned a value.
+    Rejected: operation failed and returned an error.
+    Once a promise is fulfilled or rejected, its state is settled and will not change.
+
+=================================================================================================================================
+Q9: What happens if you don’t handle a Promise rejection?
+
+    If a promise rejects and you don’t handle it with .catch() or a try/catch around await, 
+    you may get an unhandled promise rejection warning or error. 
+    In Node.js, unhandled rejections can even crash the process, 
+    and in browsers they can show warnings — so always handle errors to avoid app issues.
+
+=================================================================================================================================
+Q10: Why use async/await instead of .then() chaining?
+
+    async/await is syntactic sugar over Promises that lets you write asynchronous code that looks synchronous,
+    improving readability and maintainability. 
+    Instead of chaining .then() blocks, 
+    you use await inside an async function to pause execution until a promise resolves,
+    and handle errors with try/catch
+
+=================================================================================================================================
+Q11: What happens under the hood when using async/await?
+
+    Under the hood, async/await still uses Promises. 
+    An async function returns a promise, and each await pauses execution until the awaited promise settles.
+    The rest of the function after each await is scheduled as a microtask, 
+    running after synchronous code and before macrotasks.
+
+
+=================================================================================================================================
+Q12: Which runs first: a resolved Promise or a setTimeout with 0 delay?
+
+    A resolved Promise’s .then() callback (microtask) always runs before a setTimeout(..., 0) callback (macrotask),
+    even if the timeout is zero. 
+    This is because microtasks have higher priority and are drained before macrotasks in the event loop.
+
+=================================================================================================================================
+Q13: Explain how async/await interacts with the Event Loop.
+
+    When an await pauses on a promise, the current function’s remaining code after the await is queued as a microtask.
+    It won’t run until the current synchronous execution finishes, 
+    but it will run before any macrotasks, similar to .then() callbacks. 
+    This makes async/await compatible with the event loop’s microtask queue processing.
+
+=================================================================================================================================
+Q14: Why can’t await be used outside async functions?
+
+    Because await operates on promises and must transform the function into a state machine that schedules microtasks, 
+    JavaScript requires it to be inside an async function (or top-level in modules). 
+    Using await outside this context would break the promise scheduling mechanism, so it’s syntactically disallowed.
+
+=================================================================================================================================
+Q15: How to handle multiple async operations? (Promise.all, Promise.race)
+
+    Promise.all([...]) waits for all promises to settle and returns results as an array 
+    — useful when all tasks must complete first.
+
+    Promise.race([...]) settles (resolve or reject) as soon as one of the promises settles
+    — useful for timeouts or prioritizing fastest result.
+
+    Both help coordinate multiple asynchronous tasks efficiently.
+
+=================================================================================================================================
+=================================================================================================================================
+
+Event Loop = call stack + task queue + microtask queue.
+✔ Synchronous code runs first.
+✔ Microtasks (Promises) run before macrotasks (setTimeout).
+✔ async/await is just nicer syntax over Promises.
+✔ Promise states: pending → fulfilled or rejected.
+=================================================================================================================================
+=================================================================================================================================
+=================================================================================================================================
+=================================================================================================================================
+=================================================================================================================================
+
