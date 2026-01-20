@@ -1,0 +1,182 @@
+Q1: What is currying in JavaScript?
+
+    Currying is a functional programming technique that transforms a function 
+    with multiple arguments into a chain of functions, each taking a single argument. 
+    The final function in the chain returns the result only when all arguments are provided.
+
+    const sum = a => b => c => a + b + c;
+    console.log(sum(2)(3)(5)); // 10
+
+    This is the essence of currying — splitting argument application into multiple calls instead of one.
+
+=================================================================================================================================
+
+Q2: How is currying different from a normal function call?
+(Explain difference between fn(a,b) and fn(a)(b))
+
+    A normal function expects all arguments at once (e.g., fn(a, b)).
+    Currying splits argument application: you call the function one argument at a time (like fn(a)(b)), 
+    and each call returns another function until all required arguments are received.
+    This allows partial usage and improves reuse and modular code.
+
+=================================================================================================================================
+
+Q3: Why would you use currying in JavaScript?
+(Discuss partial application, reuse, functional programming benefits)
+
+    Currying is useful because it enables:
+
+    ✔ Partial application: You can "pre-fill" some arguments and reuse the resulting function with the remaining ones.
+    ✔ Modular and reusable code: Smaller functions that focus on one argument at a time are easier to compose and test.
+    ✔ Functional composition: Curried functions integrate well with functional pipelines and utilities.
+    ✔ Cleaner logic: Example — you can create functions like add5 = add(5) and reuse them elsewhere.
+
+=================================================================================================================================
+
+Q4: Is currying the same as partial application? If not, explain the difference.
+(Important conceptual distinction)
+
+    No — they’re related, but not the same.
+
+    ✔ Currying transforms a function into a sequence of single-argument functions.
+    ✔ Partial application fixes some arguments and returns a new function with the 
+    remaining ones without necessarily splitting all arguments into unary functions.
+
+    In currying, every argument is supplied one at a time; in partial application,
+    you supply some arguments and get back a smaller function.
+
+=================================================================================================================================
+
+Q5: How does currying work internally in terms of closures?
+(Talk about returned functions capturing previous arguments)
+    Currying works via closures: each returned function remembers the arguments supplied so far. 
+    When a new argument is passed, 
+    it’s stored in the closure and a new function is returned until all arguments are collected.
+    At that point, the original function runs using all remembered arguments.
+
+=================================================================================================================================
+
+Q6: Write a simple curried function like sum(a)(b)(c).
+(Basic coding)
+
+    const sum = a=>b=>c=>a+b+c;
+
+=================================================================================================================================
+
+Q7: Implement a generic curry() utility that works for any function.
+(Explain steps or code it)
+
+    function sum(a,b,c){
+        return a+b+c;
+    }
+
+    function curry (fn){
+        return function curried(...args){
+            if(args.length>=fn.length){
+                return fn.apply(this,args);
+            }else{
+                return function (...moreArgs){
+                    return curried.apply(this,args.concat(moreArgs));
+                }
+            }
+        }
+    }
+
+
+=================================================================================================================================
+Q8: Can you allow a curried function to be called in flexible ways?
+E.g., curry(fn)(a)(b) and curry(fn)(a,b) — explain how this works.
+
+    Yes. A good curry implementation allows calls like:
+        curriedFn(a)(b)
+        curriedFn(a, b)
+        curriedFn(a)(b, c)
+
+    This works because the implementation checks 
+    if enough arguments have been collected and 
+    either runs the original function or returns another function to collect more.
+
+=================================================================================================================================
+
+Q9: What will this output? Why?
+    function add(a) {
+    return function (b) {
+        return a + b;
+    };
+    }
+    console.log(add(2)(3));
+
+  > 2+3= 5 because of currying
+    It prints 5 because add(2) returns a function that remembers a = 2, 
+    and that function then takes b and returns 2 + 3.
+    The function chain uses closures to remember previous values.
+
+=================================================================================================================================
+
+Q10: Implement a curried function that supports infinite arguments (infinite currying).
+(This is a more advanced coding pattern)
+
+    Infinite currying allows you to keep calling a function with arguments 
+    until a terminator (often an empty call ()) ends the chain.
+
+    function sum(a) {
+    return function next(b) {
+        if (b === undefined) return a;
+        return sum(a + b);
+        };
+    }
+
+    console.log(sum(1)(2)(3)()); // 6
+    This works because the next call continues accumulating args until the final empty call is made.
+
+=================================================================================================================================
+
+Q11: What happens if you pass too many arguments to a curried function?
+(Explain how you might handle extra args)
+
+    If you pass more arguments than expected, most curry implementations will either:
+    ✔ execute immediately and ignore extras, or
+    ✔ accept them only up to the function’s arity (fn.length).
+    Some implementations allow flexible argument grouping, 
+    but the key idea is the function should run once the required arguments are satisfied.
+
+=================================================================================================================================
+
+Q12: What are some real-world use cases of currying in JavaScript/React?
+(Optional: React event handlers, reusable utilities)
+
+    ✔ Event handlers with reusable configs (e.g., onClick = action(type)(id)).
+    ✔ Utility factories (like themed logging, formatters).
+    ✔ Redux or middleware pipelines where arguments are passed in stages. Currying makes composing functions easy.
+
+=================================================================================================================================
+
+Q13: Explain how currying relates to functional programming principles.
+(Pure functions, immutability, composition)
+
+    Currying aligns with functional programming by emphasizing pure functions, immutability, 
+    and function composition — breaking logic into small, reusable units and composing them.
+
+=================================================================================================================================
+
+Q14: How do you test or debug a curried function? What edge cases would you check?
+(E.g. missing args, wrong types, partial vs full application) — simulate a thoughtful interview response.*
+
+    Test with expected argument groups (f(a)(b), f(a,b)).
+    ✔ Verify correct closures — functions remembering earlier args.
+    ✔ Edge cases: no arguments, wrong input types, infinite currying termination.
+    ✔ Use unit tests to ensure partial functions return correct behavior.
+
+=================================================================================================================================
+
+Q15: Explain a scenario where currying might be overkill or not helpful.
+(Shows practical judgment and balanced understanding)
+
+    Currying can be overkill when:
+    ✔ A function doesn’t benefit from partial usage.
+    ✔ It makes the code harder to read for teammates.
+    ✔ It adds unnecessary complexity where a simple function suffices.
+    Use it when actual reuse or composition benefits justify it.
+
+=================================================================================================================================
+=================================================================================================================================
